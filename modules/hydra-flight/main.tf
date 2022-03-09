@@ -2,7 +2,7 @@ data "aws_region" "current" {}
 
 resource "aws_ecs_service" "hydra" {
   count                  = var.hydra_count
-  name                   = "hydra-${var.name}-${count.index}"
+  name                   = "hydra-booster-${var.name}-${count.index}"
   cluster                = var.ecs_cluster_id
   task_definition        = aws_ecs_task_definition.hydra-booster[count.index].arn
   desired_count          = 1

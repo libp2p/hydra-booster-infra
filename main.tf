@@ -266,7 +266,6 @@ resource "aws_ecs_service" "test-hydra" {
     capacity_provider = "FARGATE"
     weight            = 1
   }
-
 }
 
 resource "aws_iam_role" "main" {
@@ -517,14 +516,13 @@ resource "aws_cloudwatch_log_group" "logs" {
   name = var.name
 }
 
-
 # This is a one-host flight for testing changes before deploying them to the main flight.
 # You should deploy to this first and validate that everything works, before deploying to the main flight.
 module "test" {
   source                  = "./modules/hydra-flight"
   name                    = "test"
   hydra_count             = 1
-  hydra_image             = "libp2p/hydra-booster:c3b9147"
+  hydra_image             = "libp2p/hydra-booster:eafe8e1"
   ecs_cluster_id          = module.ecs.ecs_cluster_id
   vpc_subnets             = [data.aws_subnet.subnet_use2-az1.id]
   security_groups         = [aws_security_group.hydra.id]
