@@ -351,7 +351,7 @@ resource "aws_ecs_task_definition" "hydra-booster" {
         { name = "HYDRA_PORT_BEGIN", value = "30000" },
         { name = "HYDRA_ID_OFFSET", value = tostring(count.index * var.hydra_nheads) },
 	{ name = "HYDRA_PROVIDER_STORE", value = "dynamodb://table=${aws_dynamodb_table.main.name},ttl=24h,queryLimit=10000" },
-	{ name = "HYDRA_STORE_THE_INDEX_ADDR", value = "http://ae12982c68cbd4f0d8b07163518cd1ee-1196334068.us-east-1.elb.amazonaws.com:3000/multihash"},
+	{ name = "HYDRA_STORE_THE_INDEX_ADDR", value = "https://infra.cid.contact/multihash"},
 	{ name = "HYDRA_DELEGATED_ROUTING_TIMEOUT", value = "1000"},
 	{ name = "HYDRA_DB", value = "dynamodb://table=${aws_dynamodb_table.ipns.name}"}
       ]
