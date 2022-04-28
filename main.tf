@@ -92,7 +92,7 @@ resource "aws_dynamodb_table" "main" {
 }
 
 resource "aws_appautoscaling_target" "providers_read_target" {
-  max_capacity = 10000
+  max_capacity = 30000
   min_capacity = 1000
   resource_id = "table/${aws_dynamodb_table.main.name}"
   scalable_dimension = "dynamodb:table:ReadCapacityUnits"
@@ -397,7 +397,7 @@ resource "aws_ecs_task_definition" "hydra-booster" {
         "--config.file=https://${aws_s3_bucket.grafana_config_bucket.bucket_regional_domain_name}/${aws_s3_bucket_object.grafana_agent_config_object.id}"
       ]
       cpu   = 0
-      image = "grafana/agent"
+      image = "grafana/agent:v0.23.0"
       environment = [
         # we use this for setting labels on metrics
         { name = "HYDRA_NAME", value = "${var.name}-${count.index}" }

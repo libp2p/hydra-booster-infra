@@ -81,7 +81,7 @@ resource "aws_ecs_task_definition" "hydra-booster" {
         "--config.file=${var.grafana_config_endpoint}"
       ]
       cpu   = 0
-      image = "grafana/agent"
+      image = "grafana/agent:v0.23.0"
       environment = [
         # we use this for setting labels on metrics
         { name = "HYDRA_NAME", value = "${var.name}-${count.index}" }
