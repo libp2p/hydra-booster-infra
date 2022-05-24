@@ -92,51 +92,51 @@ resource "aws_dynamodb_table" "main" {
 }
 
 resource "aws_appautoscaling_target" "providers_read_target" {
-  max_capacity = 30000
-  min_capacity = 1000
-  resource_id = "table/${aws_dynamodb_table.main.name}"
+  max_capacity       = 30000
+  min_capacity       = 1000
+  resource_id        = "table/${aws_dynamodb_table.main.name}"
   scalable_dimension = "dynamodb:table:ReadCapacityUnits"
-  service_namespace = "dynamodb"
+  service_namespace  = "dynamodb"
 }
 
 resource "aws_appautoscaling_policy" "providers_read_policy" {
-  name = "DynamoDBReadCapacityUtilization:${aws_appautoscaling_target.providers_read_target.resource_id}"
-  policy_type = "TargetTrackingScaling"
-  resource_id = aws_appautoscaling_target.providers_read_target.resource_id
+  name               = "DynamoDBReadCapacityUtilization:${aws_appautoscaling_target.providers_read_target.resource_id}"
+  policy_type        = "TargetTrackingScaling"
+  resource_id        = aws_appautoscaling_target.providers_read_target.resource_id
   scalable_dimension = aws_appautoscaling_target.providers_read_target.scalable_dimension
-  service_namespace = aws_appautoscaling_target.providers_read_target.service_namespace
+  service_namespace  = aws_appautoscaling_target.providers_read_target.service_namespace
 
   target_tracking_scaling_policy_configuration {
     predefined_metric_specification {
       predefined_metric_type = "DynamoDBReadCapacityUtilization"
     }
-    target_value = 90
-    scale_in_cooldown = 60
+    target_value       = 90
+    scale_in_cooldown  = 60
     scale_out_cooldown = 60
   }
 }
 
 resource "aws_appautoscaling_target" "providers_write_target" {
-  max_capacity = 60000
-  min_capacity = 1000
-  resource_id = "table/${aws_dynamodb_table.main.name}"
+  max_capacity       = 60000
+  min_capacity       = 1000
+  resource_id        = "table/${aws_dynamodb_table.main.name}"
   scalable_dimension = "dynamodb:table:WriteCapacityUnits"
-  service_namespace = "dynamodb"
+  service_namespace  = "dynamodb"
 }
 
 resource "aws_appautoscaling_policy" "providers_write_policy" {
-  name = "DynamoDBWriteCapacityUtilization:${aws_appautoscaling_target.providers_write_target.resource_id}"
-  policy_type = "TargetTrackingScaling"
-  resource_id = aws_appautoscaling_target.providers_write_target.resource_id
+  name               = "DynamoDBWriteCapacityUtilization:${aws_appautoscaling_target.providers_write_target.resource_id}"
+  policy_type        = "TargetTrackingScaling"
+  resource_id        = aws_appautoscaling_target.providers_write_target.resource_id
   scalable_dimension = aws_appautoscaling_target.providers_write_target.scalable_dimension
-  service_namespace = aws_appautoscaling_target.providers_write_target.service_namespace
+  service_namespace  = aws_appautoscaling_target.providers_write_target.service_namespace
 
   target_tracking_scaling_policy_configuration {
     predefined_metric_specification {
       predefined_metric_type = "DynamoDBWriteCapacityUtilization"
     }
-    target_value = 90
-    scale_in_cooldown = 60
+    target_value       = 90
+    scale_in_cooldown  = 60
     scale_out_cooldown = 60
   }
 }
@@ -160,51 +160,51 @@ resource "aws_dynamodb_table" "ipns" {
 }
 
 resource "aws_appautoscaling_target" "ipns_read_target" {
-  max_capacity = 10000
-  min_capacity = 100
-  resource_id = "table/${aws_dynamodb_table.ipns.name}"
+  max_capacity       = 10000
+  min_capacity       = 100
+  resource_id        = "table/${aws_dynamodb_table.ipns.name}"
   scalable_dimension = "dynamodb:table:ReadCapacityUnits"
-  service_namespace = "dynamodb"
+  service_namespace  = "dynamodb"
 }
 
 resource "aws_appautoscaling_policy" "ipns_read_policy" {
-  name = "DynamoDBReadCapacityUtilization:${aws_appautoscaling_target.ipns_read_target.resource_id}"
-  policy_type = "TargetTrackingScaling"
-  resource_id = aws_appautoscaling_target.ipns_read_target.resource_id
+  name               = "DynamoDBReadCapacityUtilization:${aws_appautoscaling_target.ipns_read_target.resource_id}"
+  policy_type        = "TargetTrackingScaling"
+  resource_id        = aws_appautoscaling_target.ipns_read_target.resource_id
   scalable_dimension = aws_appautoscaling_target.ipns_read_target.scalable_dimension
-  service_namespace = aws_appautoscaling_target.ipns_read_target.service_namespace
+  service_namespace  = aws_appautoscaling_target.ipns_read_target.service_namespace
 
   target_tracking_scaling_policy_configuration {
     predefined_metric_specification {
       predefined_metric_type = "DynamoDBReadCapacityUtilization"
     }
-    target_value = 90
-    scale_in_cooldown = 60
+    target_value       = 90
+    scale_in_cooldown  = 60
     scale_out_cooldown = 60
   }
 }
 
 resource "aws_appautoscaling_target" "ipns_write_target" {
-  max_capacity = 10000
-  min_capacity = 100
-  resource_id = "table/${aws_dynamodb_table.ipns.name}"
+  max_capacity       = 10000
+  min_capacity       = 100
+  resource_id        = "table/${aws_dynamodb_table.ipns.name}"
   scalable_dimension = "dynamodb:table:WriteCapacityUnits"
-  service_namespace = "dynamodb"
+  service_namespace  = "dynamodb"
 }
 
 resource "aws_appautoscaling_policy" "ipns_write_policy" {
-  name = "DynamoDBWriteCapacityUtilization:${aws_appautoscaling_target.ipns_write_target.resource_id}"
-  policy_type = "TargetTrackingScaling"
-  resource_id = aws_appautoscaling_target.ipns_write_target.resource_id
+  name               = "DynamoDBWriteCapacityUtilization:${aws_appautoscaling_target.ipns_write_target.resource_id}"
+  policy_type        = "TargetTrackingScaling"
+  resource_id        = aws_appautoscaling_target.ipns_write_target.resource_id
   scalable_dimension = aws_appautoscaling_target.ipns_write_target.scalable_dimension
-  service_namespace = aws_appautoscaling_target.ipns_write_target.service_namespace
+  service_namespace  = aws_appautoscaling_target.ipns_write_target.service_namespace
 
   target_tracking_scaling_policy_configuration {
     predefined_metric_specification {
       predefined_metric_type = "DynamoDBWriteCapacityUtilization"
     }
-    target_value = 90
-    scale_in_cooldown = 60
+    target_value       = 90
+    scale_in_cooldown  = 60
     scale_out_cooldown = 60
   }
 }
@@ -306,7 +306,7 @@ resource "aws_iam_role_policy" "main" {
         "Sid" : "HydraIPNSDynamoDB",
         "Effect" : "Allow",
         "Action" : [
-	  "dynamodb:*",
+          "dynamodb:*",
         ],
         "Resource" : aws_dynamodb_table.ipns.arn
       },
@@ -350,21 +350,21 @@ resource "aws_ecs_task_definition" "hydra-booster" {
         { name = "HYDRA_DISABLE_PREFETCH", value = "false" },
         { name = "HYDRA_PORT_BEGIN", value = "30000" },
         { name = "HYDRA_ID_OFFSET", value = tostring(count.index * var.hydra_nheads) },
-	{ name = "HYDRA_PROVIDER_STORE", value = "dynamodb://table=${aws_dynamodb_table.main.name},ttl=24h,queryLimit=10000" },
-	{ name = "HYDRA_STORE_THE_INDEX_ADDR", value = "https://infra.cid.contact/multihash"},
-	{ name = "HYDRA_DELEGATED_ROUTING_TIMEOUT", value = "1000"},
-	{ name = "HYDRA_DB", value = "dynamodb://table=${aws_dynamodb_table.ipns.name}"}
+        { name = "HYDRA_PROVIDER_STORE", value = "dynamodb://table=${aws_dynamodb_table.main.name},ttl=24h,queryLimit=10000" },
+        { name = "HYDRA_STORE_THE_INDEX_ADDR", value = "https://infra.cid.contact/multihash" },
+        { name = "HYDRA_DELEGATED_ROUTING_TIMEOUT", value = "1000" },
+        { name = "HYDRA_DB", value = "dynamodb://table=${aws_dynamodb_table.ipns.name}" }
       ]
       essential = true
       healthCheck = {
-	# if a host is totally dead, we want to replace it
-	# but if it's just really busy, we generally want to leave it alone
-	# so these health checks are pretty liberal with lots of retries
-	command = ["CMD-SHELL", "curl -fsS -o /dev/null localhost:8888/metrics || exit 1"],
-	interval = 30, # seconds
-	retries = 10,
-	startPeriod = 300, # seconds
-	timeout = 10 # seconds
+        # if a host is totally dead, we want to replace it
+        # but if it's just really busy, we generally want to leave it alone
+        # so these health checks are pretty liberal with lots of retries
+        command     = ["CMD-SHELL", "curl -fsS -o /dev/null localhost:8888/metrics || exit 1"],
+        interval    = 30, # seconds
+        retries     = 10,
+        startPeriod = 300, # seconds
+        timeout     = 10   # seconds
       }
       logConfiguration = {
         logDriver = "awslogs",
@@ -378,7 +378,7 @@ resource "aws_ecs_task_definition" "hydra-booster" {
       name         = "hydra"
       portMappings = [{ containerPort = 8888, hostPort = 8888, protocol = "tcp" }]
       secrets = [
-	{ name = "HYDRA_RANDOM_SEED", valueFrom = "${data.aws_secretsmanager_secret.hydra-random-seed.arn}:seed::" }
+        { name = "HYDRA_RANDOM_SEED", valueFrom = "${data.aws_secretsmanager_secret.hydra-random-seed.arn}:seed::" }
       ]
       ulimits = [
         {
@@ -522,7 +522,7 @@ module "test" {
   source                  = "./modules/hydra-flight"
   name                    = "test"
   hydra_count             = 1
-  hydra_image             = "libp2p/hydra-booster:eafe8e1"
+  hydra_image             = "libp2p/hydra-booster:f69e22c"
   ecs_cluster_id          = module.ecs.ecs_cluster_id
   vpc_subnets             = [data.aws_subnet.subnet_use2-az1.id]
   security_groups         = [aws_security_group.hydra.id]
@@ -545,8 +545,8 @@ module "test" {
     { name = "HYDRA_DISABLE_PREFETCH", value = "false" },
     { name = "HYDRA_PORT_BEGIN", value = "30000" },
     { name = "HYDRA_PROVIDER_STORE", value = "dynamodb://table=${aws_dynamodb_table.main.name},ttl=24h,queryLimit=10000" },
-    { name = "HYDRA_STORE_THE_INDEX_ADDR", value = "http://ae12982c68cbd4f0d8b07163518cd1ee-1196334068.us-east-1.elb.amazonaws.com:3000/multihash"},
-    { name = "HYDRA_DELEGATED_ROUTING_TIMEOUT", value = "1000"},
-    { name = "HYDRA_DB", value = "dynamodb://table=${aws_dynamodb_table.ipns.name}"}
+    { name = "HYDRA_REFRAME_ADDR", value = "http://dev.cid.contact/reframe" },
+    { name = "HYDRA_DELEGATED_ROUTING_TIMEOUT", value = "1000" },
+    { name = "HYDRA_DB", value = "dynamodb://table=${aws_dynamodb_table.ipns.name}" }
   ]
 }
