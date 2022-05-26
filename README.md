@@ -69,7 +69,7 @@ aws_secret_access_key = ...
 * Install the Terraform plugin with asdf: `asdf plugin add terraform`
 * Switch to the directory containing `main.tf` (direnv should prompt you to allow)
 * Install Terraform: `asdf install`
-* `terraform init`
+* `terraform init` / `terraform plan` / `terraform apply` as usual
 
 ## I need SSH access into a running container
 ECS can inject an SSM agent into any running container so that you can effectively "SSH" into it.
