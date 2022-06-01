@@ -47,9 +47,9 @@ data "aws_subnet" "subnet_use2-az1" {
 data "aws_subnet" "subnet_use2-az2" {
   id = "subnet-0c9532d516223c525"
 }
-
 module "ecs" {
   source             = "terraform-aws-modules/ecs/aws"
+  version            = "3.5.0"
   name               = var.name
   container_insights = true
   capacity_providers = ["FARGATE"]
