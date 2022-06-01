@@ -522,7 +522,7 @@ module "test" {
   source                  = "./modules/hydra-flight"
   name                    = "test"
   hydra_count             = 1
-  hydra_image             = "libp2p/hydra-booster:f69e22c"
+  hydra_image             = "libp2p/hydra-booster:a6826f7"
   ecs_cluster_id          = module.ecs.ecs_cluster_id
   vpc_subnets             = [data.aws_subnet.subnet_use2-az1.id]
   security_groups         = [aws_security_group.hydra.id]
@@ -545,7 +545,7 @@ module "test" {
     { name = "HYDRA_DISABLE_PREFETCH", value = "false" },
     { name = "HYDRA_PORT_BEGIN", value = "30000" },
     { name = "HYDRA_PROVIDER_STORE", value = "dynamodb://table=${aws_dynamodb_table.main.name},ttl=24h,queryLimit=10000" },
-    { name = "HYDRA_REFRAME_ADDR", value = "http://dev.cid.contact/reframe" },
+    { name = "HYDRA_REFRAME_ADDR", value = "http://cid.contact/reframe" },
     { name = "HYDRA_DELEGATED_ROUTING_TIMEOUT", value = "1000" },
     { name = "HYDRA_DB", value = "dynamodb://table=${aws_dynamodb_table.ipns.name}" }
   ]
