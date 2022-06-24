@@ -35,6 +35,10 @@ data "aws_secretsmanager_secret" "hydra-random-seed" {
 data "aws_secretsmanager_secret" "hydra-random-seed-test" {
   arn = "arn:aws:secretsmanager:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:secret:hydra-random-seed-test-lxogsg"
 }
+# from https://github.com/protocol/monitoring-infra/blob/master/ansible/vault.yml
+data "aws_secretsmanager_secret" "push-gateway-basicauth" {
+  arn = "arn:aws:secretsmanager:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:secret:push-gateway-basicauth-remzOi"
+}
 data "aws_kms_key" "default_secretsmanager_key" {
   key_id = "arn:aws:kms:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:key/58e59216-a463-4b1c-917c-8ed676da68b0"
 }
@@ -420,6 +424,37 @@ resource "aws_ecs_task_definition" "hydra-booster" {
       secrets = [
         { name = "GRAFANA_USER", valueFrom = "${data.aws_secretsmanager_secret.grafana-push-secret.arn}:username::" },
         { name = "GRAFANA_PASS", valueFrom = "${data.aws_secretsmanager_secret.grafana-push-secret.arn}:password::" }
+      ]
+      volumesFrom = []
+    },
+    {
+      command = []
+      cpu     = 0
+      image   = "mcamou/docker-alpine-cron",
+      environment = [
+        {
+          name  = "CRON_STRINGS",
+          value = "* * * * * curl -s localhost:8888/metrics | curl --basic --user $${PUSHGATEWAY_USER}:$${PUSHGATEWAY_PASSWORD} --data-binary @- https://pushgateway.k8s.locotorp.info/"
+        },
+        { name = "CRON_TAIL", value = "no_logfile" },
+        { name = "CRON_CMD_OUTPUT_LOG", value = "1" }
+      ]
+      essential = true
+      logConfiguration = {
+        logDriver = "awslogs",
+        options = {
+          awslogs-group         = aws_cloudwatch_log_group.logs.name,
+          awslogs-region        = "${data.aws_region.current.name}",
+          awslogs-stream-prefix = "ecs"
+        }
+      }
+      mountPoints           = []
+      name                  = "metrics-pushgateway"
+      portMappings          = []
+      repositoryCredentials = {}
+      secrets = [
+        { name = "PUSHGATEWAY_USER", valueFrom = "${data.aws_secretsmanager_secret.push-gateway-basicauth.arn}:user::" },
+        { name = "PUSHGATEWAY_PASSWORD", valueFrom = "${data.aws_secretsmanager_secret.push-gateway-basicauth.arn}:password::" }
       ]
       volumesFrom = []
     }
