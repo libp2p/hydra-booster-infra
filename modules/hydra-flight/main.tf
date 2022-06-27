@@ -1,4 +1,5 @@
 data "aws_region" "current" {}
+data "aws_caller_identity" "current" {}
 
 resource "aws_ecs_service" "hydra" {
   count                  = var.hydra_count
@@ -19,6 +20,10 @@ resource "aws_ecs_service" "hydra" {
     capacity_provider = "FARGATE"
     weight            = 1
   }
+}
+# from https://github.com/protocol/monitoring-infra/blob/master/ansible/vault.yml
+data "aws_secretsmanager_secret" "push-gateway-basicauth" {
+  arn = "arn:aws:secretsmanager:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:secret:push-gateway-basicauth-remzOi"
 }
 
 # note: to keep terraform from recreating this every time, keep the container definition JSON alphabetized
@@ -43,14 +48,14 @@ resource "aws_ecs_task_definition" "hydra-booster" {
       ])
       essential = true
       healthCheck = {
-	# if a host is totally dead, we want to replace it
-	# but if it's just really busy, we generally want to leave it alone
-	# so these health checks are pretty liberal with lots of retries
-	command = ["CMD-SHELL", "curl -fsS -o /dev/null localhost:8888/metrics || exit 1"],
-	interval = 30, # seconds
-	retries = 10,
-	startPeriod = 300, # seconds
-	timeout = 10 # seconds
+        # if a host is totally dead, we want to replace it
+        # but if it's just really busy, we generally want to leave it alone
+        # so these health checks are pretty liberal with lots of retries
+        command     = ["CMD-SHELL", "curl -fsS -o /dev/null localhost:8888/metrics || exit 1"],
+        interval    = 30, # seconds
+        retries     = 10,
+        startPeriod = 300, # seconds
+        timeout     = 10   # seconds
       }
       logConfiguration = {
         logDriver = "awslogs",
@@ -102,6 +107,37 @@ resource "aws_ecs_task_definition" "hydra-booster" {
         credentialsParameter = var.docker_pull_secret_arn
       }
       secrets     = var.grafana_secrets
+      volumesFrom = []
+    },
+    {
+      command = []
+      cpu     = 0
+      image   = "mcamou/docker-alpine-cron",
+      environment = [
+        {
+          name  = "CRON_STRINGS",
+          value = "* * * * * curl -s localhost:8888/metrics | curl --basic --user $${PUSHGATEWAY_USER}:$${PUSHGATEWAY_PASSWORD} --data-binary @- https://pushgateway.k8s.locotorp.info/"
+        },
+        { name = "CRON_TAIL", value = "no_logfile" },
+        { name = "CRON_CMD_OUTPUT_LOG", value = "1" }
+      ]
+      essential = true
+      logConfiguration = {
+        logDriver = "awslogs",
+        options = {
+          awslogs-group         = var.log_group_name,
+          awslogs-region        = "${data.aws_region.current.name}",
+          awslogs-stream-prefix = "ecs"
+        }
+      }
+      mountPoints           = []
+      name                  = "metrics-pushgateway"
+      portMappings          = []
+      repositoryCredentials = {}
+      secrets = [
+        { name = "PUSHGATEWAY_USER", valueFrom = "${data.aws_secretsmanager_secret.push-gateway-basicauth.arn}:user::" },
+        { name = "PUSHGATEWAY_PASSWORD", valueFrom = "${data.aws_secretsmanager_secret.push-gateway-basicauth.arn}:password::" }
+      ]
       volumesFrom = []
     }
   ])
