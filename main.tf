@@ -35,6 +35,10 @@ data "aws_secretsmanager_secret" "hydra-random-seed" {
 data "aws_secretsmanager_secret" "hydra-random-seed-test" {
   arn = "arn:aws:secretsmanager:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:secret:hydra-random-seed-test-lxogsg"
 }
+# from https://github.com/protocol/monitoring-infra/blob/master/ansible/vault.yml
+data "aws_secretsmanager_secret" "push-gateway-basicauth" {
+  arn = "arn:aws:secretsmanager:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:secret:push-gateway-basicauth-remzOi"
+}
 data "aws_kms_key" "default_secretsmanager_key" {
   key_id = "arn:aws:kms:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:key/58e59216-a463-4b1c-917c-8ed676da68b0"
 }
@@ -345,7 +349,8 @@ resource "aws_ecs_task_definition" "hydra-booster" {
       image = "libp2p/hydra-booster:992a8ef"
       environment = [
         { name = "HYDRA_NHEADS", value = tostring(var.hydra_nheads) },
-        { name = "HYDRA_NAME", value = "${var.name}-${count.index}" },
+        // TODO Change hydra-booster- to ${var.name}- once we remove the duplication (hydra-booster-hydra-test)
+        { name = "HYDRA_NAME", value = "hydra-booster-${count.index}" },
         { name = "HYDRA_BOOTSTRAP_PEERS", value = "/dnsaddr/sjc-2.bootstrap.libp2p.io/p2p/QmZa1sAxajnQjVM8WjWXoMbmPd7NsWhfKsPkErzpm9wGkp,/dnsaddr/bootstrap.libp2p.io/p2p/QmNnooDu7bfjPFoTZYxMNLWUQJyrVwtbZg5gBMjTezGAJN,/dnsaddr/bootstrap.libp2p.io/p2p/QmQCU2EcMqAqQPR2i9bChDtGNJchTbq5TbXJJ16u19uLTa,/dnsaddr/bootstrap.libp2p.io/p2p/QmbLHAnMoJPWSCR5Zhtx6BHJX9KiKNN6tpvbUcqanj75Nb,/dnsaddr/bootstrap.libp2p.io/p2p/QmcZf59bWwK5XFi76CZX8cbJ4BhTzzA3gU1ZjYZcYW3dwt" },
         { name = "HYDRA_DISABLE_PREFETCH", value = "false" },
         { name = "HYDRA_PORT_BEGIN", value = "30000" },
@@ -420,6 +425,38 @@ resource "aws_ecs_task_definition" "hydra-booster" {
       secrets = [
         { name = "GRAFANA_USER", valueFrom = "${data.aws_secretsmanager_secret.grafana-push-secret.arn}:username::" },
         { name = "GRAFANA_PASS", valueFrom = "${data.aws_secretsmanager_secret.grafana-push-secret.arn}:password::" }
+      ]
+      volumesFrom = []
+    },
+    {
+      command = []
+      cpu     = 0
+      image   = "mcamou/docker-alpine-cron",
+      environment = [
+        {
+          name  = "CRON_STRINGS",
+          value = "* * * * * curl -s localhost:8888/metrics | curl --basic --user $${PUSHGATEWAY_USER}:$${PUSHGATEWAY_PASSWORD} --data-binary @- https://pushgateway.k8s.locotorp.info/metrics/job/hydra_boosters/instance/$${HYDRA_NAME}"
+        },
+        { name = "CRON_TAIL", value = "no_logfile" },
+        { name = "CRON_CMD_OUTPUT_LOG", value = "1" },
+        # we use this for setting labels on metrics
+        { name = "HYDRA_NAME", value = "${var.name}-${count.index}" }
+      ]
+      essential = true
+      logConfiguration = {
+        logDriver = "awslogs",
+        options = {
+          awslogs-group         = aws_cloudwatch_log_group.logs.name,
+          awslogs-region        = "${data.aws_region.current.name}",
+          awslogs-stream-prefix = "ecs"
+        }
+      }
+      mountPoints  = []
+      name         = "metrics-pushgateway"
+      portMappings = []
+      secrets = [
+        { name = "PUSHGATEWAY_USER", valueFrom = "${data.aws_secretsmanager_secret.push-gateway-basicauth.arn}:user::" },
+        { name = "PUSHGATEWAY_PASSWORD", valueFrom = "${data.aws_secretsmanager_secret.push-gateway-basicauth.arn}:password::" }
       ]
       volumesFrom = []
     }
@@ -498,6 +535,7 @@ data "aws_iam_policy_document" "ecsTaskExecutionRole_policy_data" {
       data.aws_secretsmanager_secret.grafana-push-secret.arn,
       data.aws_secretsmanager_secret.hydra-random-seed.arn,
       data.aws_secretsmanager_secret.hydra-random-seed-test.arn,
+      data.aws_secretsmanager_secret.push-gateway-basicauth.arn,
       data.aws_kms_key.default_secretsmanager_key.arn,
     ]
   }
