@@ -116,7 +116,7 @@ resource "aws_ecs_task_definition" "hydra-booster" {
       environment = [
         {
           name  = "CRON_STRINGS",
-          value = "* * * * * curl -s localhost:8888/metrics | curl --basic --user $${PUSHGATEWAY_USER}:$${PUSHGATEWAY_PASSWORD} --data-binary @- https://pushgateway.k8s.locotorp.info/"
+          value = "* * * * * curl -s localhost:8888/metrics | curl --basic --user $${PUSHGATEWAY_USER}:$${PUSHGATEWAY_PASSWORD} --data-binary @- https://pushgateway.k8s.locotorp.info/metrics/job/hydra_boosters/instance/localhost"
         },
         { name = "CRON_TAIL", value = "no_logfile" },
         { name = "CRON_CMD_OUTPUT_LOG", value = "1" }
@@ -130,10 +130,9 @@ resource "aws_ecs_task_definition" "hydra-booster" {
           awslogs-stream-prefix = "ecs"
         }
       }
-      mountPoints           = []
-      name                  = "metrics-pushgateway"
-      portMappings          = []
-      repositoryCredentials = {}
+      mountPoints  = []
+      name         = "metrics-pushgateway"
+      portMappings = []
       secrets = [
         { name = "PUSHGATEWAY_USER", valueFrom = "${data.aws_secretsmanager_secret.push-gateway-basicauth.arn}:user::" },
         { name = "PUSHGATEWAY_PASSWORD", valueFrom = "${data.aws_secretsmanager_secret.push-gateway-basicauth.arn}:password::" }
