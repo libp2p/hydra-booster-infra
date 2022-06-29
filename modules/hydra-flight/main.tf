@@ -116,10 +116,12 @@ resource "aws_ecs_task_definition" "hydra-booster" {
       environment = [
         {
           name  = "CRON_STRINGS",
-          value = "* * * * * curl -s localhost:8888/metrics | curl --basic --user $${PUSHGATEWAY_USER}:$${PUSHGATEWAY_PASSWORD} --data-binary @- https://pushgateway.k8s.locotorp.info/metrics/job/hydra_boosters/instance/localhost"
+          value = "* * * * * curl -s localhost:8888/metrics | curl --basic --user $${PUSHGATEWAY_USER}:$${PUSHGATEWAY_PASSWORD} --data-binary @- https://pushgateway.k8s.locotorp.info/metrics/job/hydra_boosters/instance/$${HYDRA_NAME}"
         },
         { name = "CRON_TAIL", value = "no_logfile" },
-        { name = "CRON_CMD_OUTPUT_LOG", value = "1" }
+        { name = "CRON_CMD_OUTPUT_LOG", value = "1" },
+        # we use this for setting labels on metrics
+        { name = "HYDRA_NAME", value = "${var.name}-${count.index}" }
       ]
       essential = true
       logConfiguration = {
