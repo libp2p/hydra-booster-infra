@@ -349,8 +349,7 @@ resource "aws_ecs_task_definition" "hydra-booster" {
       image = "libp2p/hydra-booster:992a8ef"
       environment = [
         { name = "HYDRA_NHEADS", value = tostring(var.hydra_nheads) },
-        // TODO Change hydra-booster- to ${var.name}- once we remove the duplication (hydra-booster-hydra-test)
-        { name = "HYDRA_NAME", value = "hydra-booster-${count.index}" },
+        { name = "HYDRA_NAME", value = "${var.name}-${count.index}" },
         { name = "HYDRA_BOOTSTRAP_PEERS", value = "/dnsaddr/sjc-2.bootstrap.libp2p.io/p2p/QmZa1sAxajnQjVM8WjWXoMbmPd7NsWhfKsPkErzpm9wGkp,/dnsaddr/bootstrap.libp2p.io/p2p/QmNnooDu7bfjPFoTZYxMNLWUQJyrVwtbZg5gBMjTezGAJN,/dnsaddr/bootstrap.libp2p.io/p2p/QmQCU2EcMqAqQPR2i9bChDtGNJchTbq5TbXJJ16u19uLTa,/dnsaddr/bootstrap.libp2p.io/p2p/QmbLHAnMoJPWSCR5Zhtx6BHJX9KiKNN6tpvbUcqanj75Nb,/dnsaddr/bootstrap.libp2p.io/p2p/QmcZf59bWwK5XFi76CZX8cbJ4BhTzzA3gU1ZjYZcYW3dwt" },
         { name = "HYDRA_DISABLE_PREFETCH", value = "false" },
         { name = "HYDRA_PORT_BEGIN", value = "30000" },
