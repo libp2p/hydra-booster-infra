@@ -74,6 +74,10 @@ resource "aws_dynamodb_table" "main" {
   hash_key       = "key"
   range_key      = "ttl"
 
+  point_in_time_recovery {
+    enabled = true
+  }
+
   attribute {
     name = "key"
     type = "B"
@@ -151,6 +155,10 @@ resource "aws_dynamodb_table" "ipns" {
   read_capacity  = 100
   write_capacity = 100
   hash_key       = "DSKey"
+
+  point_in_time_recovery {
+    enabled = true
+  }
 
   attribute {
     name = "DSKey"
