@@ -2,6 +2,19 @@ resource "aws_s3_bucket" "dynamodb_s3export" {
   bucket = "${var.name}-dynamodb-exports"
 }
 
+resource "aws_s3_bucket_lifecycle_configuration" "example" {
+  bucket = aws_s3_bucket.dynamodb_s3export.id
+
+  rule {
+    id     = "data-retention"
+    status = "Enabled"
+
+    expiration {
+      days = 7
+    }
+  }
+}
+
 resource "aws_cloudwatch_event_rule" "dynamodb_s3export" {
   name                = "${var.name}-dynamodb-s3export-scheduler"
   description         = "This CloudWatch event fires every day at noon and schedules DynamoDB exports to S3."
