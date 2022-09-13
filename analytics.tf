@@ -92,7 +92,7 @@ resource "aws_lambda_function" "dynamodb_s3export" {
 
   environment {
     variables = {
-      "S3_BUCKET_ARN"       = aws_s3_bucket.dynamodb_s3export.arn
+      "S3_BUCKET_NAME"       = aws_s3_bucket.dynamodb_s3export.id
       "DYNAMODB_TABLE_ARNS" = join(",", [aws_dynamodb_table.main.arn, aws_dynamodb_table.ipns.arn])
     }
   }
