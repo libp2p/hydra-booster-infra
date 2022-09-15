@@ -354,7 +354,7 @@ resource "aws_ecs_task_definition" "hydra-booster" {
   container_definitions = jsonencode([
     {
       cpu   = 0
-      image = "libp2p/hydra-booster:992a8ef"
+      image = "libp2p/hydra-booster:af77f7a"
       environment = [
         { name = "HYDRA_NHEADS", value = tostring(var.hydra_nheads) },
         { name = "HYDRA_NAME", value = "${var.name}-${count.index}" },
@@ -364,7 +364,8 @@ resource "aws_ecs_task_definition" "hydra-booster" {
         { name = "HYDRA_ID_OFFSET", value = tostring(count.index * var.hydra_nheads) },
         { name = "HYDRA_PROVIDER_STORE", value = "dynamodb://table=${aws_dynamodb_table.main.name},ttl=24h,queryLimit=10000" },
         { name = "HYDRA_STORE_THE_INDEX_ADDR", value = "https://infra.cid.contact/multihash" },
-        { name = "HYDRA_DELEGATED_ROUTING_TIMEOUT", value = "1000" },
+	{ name = "HYDRA_DELEGATED_ROUTING_TIMEOUT", value = "1000" },
+	{ name = "HYDRA_REFRAME_ADDR", value = "http://cid.contact/reframe" },
         { name = "HYDRA_DB", value = "dynamodb://table=${aws_dynamodb_table.ipns.name}" }
       ]
       essential = true
@@ -567,7 +568,7 @@ module "test" {
   source                  = "./modules/hydra-flight"
   name                    = "test"
   hydra_count             = 1
-  hydra_image             = "libp2p/hydra-booster:a6826f7"
+  hydra_image             = "libp2p/hydra-booster:af77f7a"
   ecs_cluster_id          = module.ecs.ecs_cluster_id
   vpc_subnets             = [data.aws_subnet.subnet_use2-az1.id]
   security_groups         = [aws_security_group.hydra.id]
