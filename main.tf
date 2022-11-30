@@ -568,7 +568,7 @@ module "test" {
   source                  = "./modules/hydra-flight"
   name                    = "test"
   hydra_count             = 1
-  hydra_image             = "libp2p/hydra-booster:af77f7a"
+  hydra_image             = "libp2p/hydra-booster:d36e6e7"
   ecs_cluster_id          = module.ecs.ecs_cluster_id
   vpc_subnets             = [data.aws_subnet.subnet_use2-az1.id]
   security_groups         = [aws_security_group.hydra.id]
@@ -588,9 +588,9 @@ module "test" {
     # Defaults 
     { name = "HYDRA_NHEADS", value = tostring(var.hydra_nheads) },
     { name = "HYDRA_BOOTSTRAP_PEERS", value = "/dnsaddr/sjc-2.bootstrap.libp2p.io/p2p/QmZa1sAxajnQjVM8WjWXoMbmPd7NsWhfKsPkErzpm9wGkp,/dnsaddr/bootstrap.libp2p.io/p2p/QmNnooDu7bfjPFoTZYxMNLWUQJyrVwtbZg5gBMjTezGAJN,/dnsaddr/bootstrap.libp2p.io/p2p/QmQCU2EcMqAqQPR2i9bChDtGNJchTbq5TbXJJ16u19uLTa,/dnsaddr/bootstrap.libp2p.io/p2p/QmbLHAnMoJPWSCR5Zhtx6BHJX9KiKNN6tpvbUcqanj75Nb,/dnsaddr/bootstrap.libp2p.io/p2p/QmcZf59bWwK5XFi76CZX8cbJ4BhTzzA3gU1ZjYZcYW3dwt" },
-    { name = "HYDRA_DISABLE_PREFETCH", value = "false" },
+    { name = "HYDRA_DISABLE_PREFETCH", value = "true" },
     { name = "HYDRA_PORT_BEGIN", value = "30000" },
-    { name = "HYDRA_PROVIDER_STORE", value = "dynamodb://table=${aws_dynamodb_table.main.name},ttl=24h,queryLimit=10000" },
+    { name = "HYDRA_PROVIDER_STORE", value = "none" },
     { name = "HYDRA_REFRAME_ADDR", value = "http://cid.contact/reframe" },
     { name = "HYDRA_DELEGATED_ROUTING_TIMEOUT", value = "1000" },
     { name = "HYDRA_DB", value = "dynamodb://table=${aws_dynamodb_table.ipns.name}" }
