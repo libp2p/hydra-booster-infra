@@ -101,7 +101,7 @@ resource "aws_dynamodb_table" "main" {
 
 resource "aws_appautoscaling_target" "providers_read_target" {
   max_capacity       = 30000
-  min_capacity       = 1000
+  min_capacity       = 10
   resource_id        = "table/${aws_dynamodb_table.main.name}"
   scalable_dimension = "dynamodb:table:ReadCapacityUnits"
   service_namespace  = "dynamodb"
@@ -126,7 +126,7 @@ resource "aws_appautoscaling_policy" "providers_read_policy" {
 
 resource "aws_appautoscaling_target" "providers_write_target" {
   max_capacity       = 60000
-  min_capacity       = 1000
+  min_capacity       = 10
   resource_id        = "table/${aws_dynamodb_table.main.name}"
   scalable_dimension = "dynamodb:table:WriteCapacityUnits"
   service_namespace  = "dynamodb"
