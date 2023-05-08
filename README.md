@@ -1,3 +1,9 @@
+> **Warning**
+>
+> This repo was archived because Protocol Labs no longer operates Hydra Boosters for the IPFS network.
+>
+> For more information, see: https://discuss.ipfs.tech/t/dht-hydra-peers-dialling-down-non-bridging-functionality-on-2022-12-01/15567
+
 # Hydra Infrastructure
 
 This repo contains the Terraform infrastructure that Protocol Labs uses for running [Hydras](github.com/libp2p/hydra-booster/), and operational runbooks and tooling.
